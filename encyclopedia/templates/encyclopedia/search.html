@@ -1,26 +1,26 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    Search Results
+  Search Results
 {% endblock %}
 
 {% block body %}
-    <h1>Search Results for "{{ query }}"</h1>
+  <h1>Search Results for "{{ query }}"</h1>
 
-    <h3>
-        {% if result_count == 1 %}
-            {{ result_count }} result found
-        {% else %}
-            {{result_count }} results found
-        {% endif %}
-    </h3>
-    <ul>
-        {% for result in results %}
-            <li>
-                <a href="{% url 'wiki' result %}">
-                    {{ result }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+  <h3>
+    {% if result_count == 1 %}
+      {{ result_count }} result found
+    {% else %}
+      {{result_count }} results found
+    {% endif %}
+  </h3>
+  <ul>
+    {% for result in results %}
+      <li>
+        <a href="{% url 'wiki' result %}">
+          {{ result }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}

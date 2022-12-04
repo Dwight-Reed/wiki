@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from markdown2 import markdown
@@ -50,10 +50,10 @@ def search2(request):
         })
 
 def search(request):
-    print(request.GET.get("q"))
-    print("search")
+    query = request.GET.get("q")
 
-    return HttpResponse()
+    results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
+    return JsonResponse({"results": results})
 
 # TODO: remove
 def test_search(request):
