@@ -2,6 +2,8 @@ import re
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.db.models import Q
+from .models import Entry
 
 
 def list_entries():
@@ -35,3 +37,13 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+# Returns a list of page titles where either the title or content contain the query (titles come first)
+# Used for the search page and API
+def generic_search(query):
+    title_matches = Entry.objects.filter(title__icontains=query).order_by("title")
+    content_matches = Entry.objects.filter(content__icontains=query).order_by("title")
+
+    # https://stackoverflow.com/a/66060106/15843982
+    results = Entry.objects.filter(Q(title__icontains=query) | Q(content__icontains=query))
+    return list(results.values_list("title", flat=True))

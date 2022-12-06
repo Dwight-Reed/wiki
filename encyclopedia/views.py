@@ -1,8 +1,8 @@
-from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from markdown2 import markdown
@@ -11,6 +11,7 @@ from os.path import splitext
 from random import choice
 
 from . import util
+from .forms import EditForm, NewPageForm, LoginForm, RegisterForm
 from .models import Entry, User
 
 def index(request):
@@ -18,7 +19,7 @@ def index(request):
         "entries": util.list_entries()
     })
 
-def wiki(request, entry):
+def wiki_old(request, entry):
     content = util.get_entry(entry)
     if content:
         return render(request, "encyclopedia/entry.html", {
@@ -30,10 +31,23 @@ def wiki(request, entry):
         "entry": entry
         }))
 
+def wiki(request, title):
+    try:
+        content = Entry.objects.get(title=title).content
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound(render(request, "encyclopedia/not_found.html", {
+            "title": title,
+        }))
+    return render(request, "encyclopedia/entry.html", {
+        "title": title,
+        # TODO: Check what safe mode allows
+        "content": markdown(content, safe_mode=True)
+    })
 
-def search2(request):
 
-    query = request.GET.get("q", "")
+def search_results_old(request):
+
+    query = request.GET.get("q")
     content = util.get_entry(query)
     if content:
         return HttpResponseRedirect(f"wiki/{query}")
@@ -49,75 +63,26 @@ def search2(request):
             "result_count": len(results)
         })
 
+
+def search_results(request):
+    query = request.GET.get("q")
+    results = util.generic_search(query)
+    title_matches = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True).order_by("title"))
+    content_matches = list(Entry.objects.filter(content__icontains=query).values_list("title", flat=True))
+    return render(request, "encyclopedia/search.html", {
+        "query": query,
+        "results": results,
+        "result_count": len(results)
+    })
+
 def search(request):
     query = request.GET.get("q")
 
     results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
     return JsonResponse({"results": results})
 
-# TODO: remove
-def test_search(request):
-    return render(request, "encyclopedia/search.html")
-
-class EditForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea(attrs={
-        "placeholder": "Content",
-        # TODO: move to styles.css
-        "style": "width: 100%; max-height: 100%;",
-        "rows": "100",
-        "class": "form-control",
-        }), label="")
-
-class NewPageForm(EditForm):
-    title = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Title"}), label="")
-
-    # place title before content
-    field_order = ["title", "content"]
-
-    # check if page already exists
-    def clean(self):
-        cleaned_data = super().clean()
-        title = cleaned_data.get("title")
-
-        if util.get_entry(title):
-            self.add_error("title", f'Page "{title}" already exists')
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={
-        "placeholder": "username",
-        "class": "form-control",
-    }),
-        label="",
-    )
-
-    password = forms.CharField(widget=forms.TextInput(attrs={
-        "placeholder": "password",
-        "class": "form-control",
-        "type": "password",
-    }),
-        label="",
-    )
-
-class RegisterForm(LoginForm):
-    email = forms.EmailField(widget=forms.TextInput(attrs={
-        "placeholder": "email",
-        "class": "form-control",
-    }),
-        label="",
-    )
-    confirm = forms.CharField(widget=forms.TextInput(attrs={
-        "placeholder": "confirm password",
-        "class": "form-control",
-        "type": "password",
-    }),
-        label="",
-    )
-    field_order = ["username", "email", "password", "confirm"]
-
-
 @login_required
-def new_page(request):
+def new_page_old(request):
 
     if request.method == "POST":
         form = NewPageForm(request.POST)
@@ -148,8 +113,35 @@ def new_page(request):
             "form": NewPageForm()
         })
 
+# TODO: Create new page link broken when not logged in
 @login_required
-def edit(request, entry):
+def new_page(request):
+    if request.method == "POST":
+        form = NewPageForm(request.POST)
+
+        if form.is_valid():
+            title = form.data["title"]
+            content = form.data["content"]
+            if Entry.objects.filter(title=title).exists():
+                return render(request, "encyclopedia/new_page.html", {
+                    "form": form,
+                    "message": f'Page "{title}" already exists',
+                })
+
+            Entry.objects.create(title=title, content=content)
+            return HttpResponseRedirect(reverse("wiki", args={title}))
+
+        return render(request, "encyclopedia/new_page.html", {
+            "form": form,
+            "message": "Invalid form",
+        })
+
+    return render(request, "encyclopedia/new_page.html", {
+        "form": NewPageForm(),
+    })
+
+@login_required
+def edit_old(request, entry):
     if request.method == "POST":
         form = EditForm(request.POST)
 
@@ -164,9 +156,6 @@ def edit(request, entry):
 
             return HttpResponseRedirect(f"wiki/{entry}")
         else:
-            print(form)
-            print("Invalid Form")
-            print(form.errors)
             return render(request, "encyclopedia/edit.html", {
                 "form": form
             })
@@ -178,6 +167,32 @@ def edit(request, entry):
             }),
             "entry": entry
         })
+
+@login_required
+def edit(request, title):
+    if request.method == "POST":
+        form = EditForm(request.POST)
+
+        if form.is_valid():
+            content = form.data["content"]
+            entry = Entry.objects.get(title=title)
+            entry.content = content
+            entry.save()
+            return HttpResponseRedirect(reverse("wiki", args={title}))
+        return render(request, "encyclopedia/edit.html", {
+            "title": title,
+            # TODO: don't use generic message
+            "message": "invalid form",
+        })
+
+
+    return render(request, "encyclopedia/edit.html", {
+        "title": title,
+        "form": EditForm({
+            "content": Entry.objects.get(title=title).content
+        })
+    })
+
 
 # random page
 def random(request):
@@ -191,6 +206,7 @@ def register(request):
         if not form.is_valid():
             # TODO: replace generic invalid form when possible (e.g. invalid email)
             return render(request, "registration/register.html", {
+                "form": form,
                 "message": "Invalid Form",
             })
         username = form.data["username"]
@@ -201,6 +217,7 @@ def register(request):
         if password != confirm:
             # TODO: don't reload page
             return render(request, "registration/register.html", {
+                "form": form,
                 "message": "Passwords must match",
             })
         try:
@@ -208,6 +225,7 @@ def register(request):
             user.save()
         except IntegrityError:
             return render(request, "registration/register.html", {
+                "form": form,
                 "message": "Username is already taken"
             })
         login(request, user)
@@ -226,9 +244,7 @@ def login_view(request):
             })
 
         user = authenticate(request, username=form.data["username"], password=form.data["password"])
-        print("user:", user)
         if user == None:
-            print("user is None")
             return render(request, "registration/login.html", {
                 "message": "Incorrect username or password",
                 "form": form,
@@ -242,8 +258,6 @@ def login_view(request):
     return render(request, "registration/login.html", {
         "form": LoginForm(),
     })
-
-
 
 def logout_view(request):
     logout(request)

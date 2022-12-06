@@ -12,19 +12,12 @@ class Entry(models.Model):
     content = models.TextField()
     history = HistoricalRecords()
 
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
-
     class Meta:
+        ordering = ["title"]
         constraints = [
             # Case-insensitive unique title
             UniqueConstraint(
-                Lower('title'),
-                name='title_unique',
+                Lower("title"),
+                name="title_unique",
             ),
         ]

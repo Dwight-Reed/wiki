@@ -1,22 +1,16 @@
-let searchField
 let timeoutID
-let dropdown
-
-document.addEventListener('DOMContentLoaded', function () {
-  searchField = document.querySelector('#myInput')
-  dropdown = document.querySelector('.dropdown-menu')
-})
 
 function search() {
-  // Only send requests if there has been no input for 300ms
+  let searchField = document.querySelector('#myInput')
+  let dropdown = document.querySelector('.dropdown-menu')
+  // Only send requests if there has been no input for 200ms
   clearTimeout(timeoutID)
   timeoutID = setTimeout(() => {
-    console.log(searchField.value)
     if (searchField.value == '') {
       dropdown.innerHTML = ''
       return
     }
-    fetch(`/search?q=${searchField.value}`)
+    fetch(`/api/search?q=${searchField.value}`)
     .then((response) => response.json())
     .then((data) => {
       dropdown.innerHTML = ''
@@ -26,18 +20,37 @@ function search() {
         // TODO: check if entryTitle can be capitalized and if links with diff capitalization work
         link.setAttribute('href', `/wiki/${entryTitle}`)
         link.classList.add('dropdown-item')
-        link.innerHTML = entryTitle
+        // Used to help modify bolded parts
+        link.setAttribute('data-original', entryTitle)
         li.appendChild(link)
         dropdown.appendChild(li)
+        // Update bolded text after changing results
+        boldDropdown()
       })
     })
-  }, 300)
+  }, 200)
+  // Update bolded text after the query is changed
+  boldDropdown()
 }
 
-function focus() {
-
+// Adds bold tags to the autocomplete dropdown where the text matches the query
+function boldDropdown() {
+  document.querySelectorAll('.dropdown-item').forEach((link) => {
+    searchField = document.querySelector('.dropdown-toggle')
+    link.innerHTML = boldFragment(link.getAttribute('data-original'), searchField.value)
+  })
 }
 
-function focusOut() {
+// Escape an entire string
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
+// Adds bold tags wrapping all appearances of fragment in text (case-insensitive)
+function boldFragment(text, fragment) {
+  reg = new RegExp(escapeRegExp(fragment), 'gi')
+  // TODO: change in-line function
+  final_str = text.replace(reg, function(str) {return '<b>'+str+'</b>'})
+  return final_str
 }
