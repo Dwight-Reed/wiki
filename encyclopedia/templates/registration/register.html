@@ -4,7 +4,15 @@
   {{ message }}
   <form action="{% url 'register' %}" method="post">
     {% csrf_token %}
-    {{ form }}
+    {% comment %} using {{ form }} adds an extra line break before help_text {% endcomment %}
+    {{ form.username }}
+    {{ form.username.help_text}}
+    {{ form.username.errors}}
+    {{ form.email }}
+    {{ form.email.errors }}
+    {{ form.password1 }}
+    {{ form.password2 }}
+    {{ form.password2.errors}}
     <input type="submit" value="Submit">
   </form>
 {% endblock %}

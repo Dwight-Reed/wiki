@@ -1,4 +1,10 @@
 from django import forms
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
+from .models import User
 
 class EditForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(attrs={
@@ -15,44 +21,58 @@ class NewPageForm(EditForm):
     # place title before content
     field_order = ["title", "content"]
 
-    # TODO: remove
-    # check if page already exists
-    # def clean(self):
-    #     cleaned_data = super().clean()
-    #     title = cleaned_data.get("title")
-
-    #     if util.get_entry(title):
-    #         self.add_error("title", f'Page "{title}" already exists')
-
-
-class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={
+class LoginForm(AuthenticationForm):
+    username = UsernameField(widget=forms.TextInput(attrs={
         "placeholder": "username",
         "class": "form-control",
+        "autofocus": "true",
     }),
         label="",
     )
 
-    password = forms.CharField(widget=forms.TextInput(attrs={
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
         "placeholder": "password",
         "class": "form-control",
-        "type": "password",
     }),
         label="",
     )
 
-class RegisterForm(LoginForm):
-    email = forms.EmailField(widget=forms.TextInput(attrs={
-        "placeholder": "email",
+    class Meta(UserCreationForm.Meta):
+        model = User
+
+class RegisterForm(UserCreationForm):
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
+        "placeholder": "password",
         "class": "form-control",
     }),
+        strip=False,
         label="",
     )
-    confirm = forms.CharField(widget=forms.TextInput(attrs={
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
         "placeholder": "confirm password",
         "class": "form-control",
-        "type": "password",
     }),
+        strip=False,
         label="",
     )
-    field_order = ["username", "email", "password", "confirm"]
+    class Meta():
+        model = User
+        fields = ["username", "email"]
+        field_classes = {"username": UsernameField}
+        widgets = {
+            "username": forms.TextInput(attrs={
+                "placeholder": "username",
+                "class": "form-control",
+            }),
+            "email": forms.TextInput(attrs={
+                "placeholder": "email",
+                "class": "form-control",
+            }),
+        }
+        labels = {
+            "username": "",
+            "email": "",
+        }
+        help_texts = {
+            "username": "150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+        }

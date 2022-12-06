@@ -16,7 +16,7 @@ from .models import Entry, User
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
+        "titles": list(Entry.objects.all().values_list("title", flat=True)),
     })
 
 def wiki_old(request, entry):
@@ -203,33 +203,21 @@ def random(request):
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
-        if not form.is_valid():
-            # TODO: replace generic invalid form when possible (e.g. invalid email)
-            return render(request, "registration/register.html", {
-                "form": form,
-                "message": "Invalid Form",
-            })
-        username = form.data["username"]
-        email = form.data["email"]
-        password = form.data["password"]
-        confirm = form.data["confirm"]
-
-        if password != confirm:
-            # TODO: don't reload page
-            return render(request, "registration/register.html", {
-                "form": form,
-                "message": "Passwords must match",
-            })
-        try:
+        if form.is_valid():
+            username = form.data.get("username")
+            email = form.data.get("email")
+            password = form.data.get("password1")
+            # user = User(username=username, email=email, password=password)
             user = User.objects.create_user(username, email, password)
             user.save()
-        except IntegrityError:
-            return render(request, "registration/register.html", {
-                "form": form,
-                "message": "Username is already taken"
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+
+        return render(request, "registration/register.html", {
+            "form": form,
+            # "errors": [form.error_messages[error] for error in form.errors]
+        })
+
     return render(request, "registration/register.html", {
         "form": RegisterForm(),
     })
@@ -249,8 +237,8 @@ def login_view(request):
                 "message": "Incorrect username or password",
                 "form": form,
             })
-        else:
-            login(request, user)
+
+        login(request, user)
 
 
         return HttpResponseRedirect(reverse("index"))

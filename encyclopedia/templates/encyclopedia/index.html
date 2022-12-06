@@ -6,12 +6,11 @@
 
 {% block body %}
     <h1>All Pages</h1>
-
     <ul>
-        {% for entry in entries %}
+        {% for title in titles %}
             <li>
-                <a href="{% url 'wiki' entry %}">
-                    {{ entry }}
+                <a href="{% url 'wiki' title %}">
+                    {{ title }}
                 </a>
             </li>
         {% endfor %}
