@@ -4,7 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import Image, User
+
 
 class EditForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(attrs={
@@ -15,11 +16,35 @@ class EditForm(forms.Form):
         "class": "form-control",
         }), label="")
 
+
 class NewPageForm(EditForm):
     title = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Title"}), label="")
 
     # place title before content
     field_order = ["title", "content"]
+
+
+class ImageCreateForm(forms.ModelForm):
+    class Meta:
+        model = Image
+
+        fields = ["name", "image"]
+        # fields = ["image"]
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "placeholder": "name",
+                "class": "form-control",
+                "autofocus": "true"
+            }),
+            "image": forms.FileInput(),
+        }
+
+        labels = {
+            "name": "",
+            "image": "",
+        }
+
 
 class LoginForm(AuthenticationForm):
     username = UsernameField(widget=forms.TextInput(attrs={
@@ -39,6 +64,7 @@ class LoginForm(AuthenticationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
+
 
 class RegisterForm(UserCreationForm):
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={

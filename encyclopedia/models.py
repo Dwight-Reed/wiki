@@ -27,6 +27,6 @@ class Entry(models.Model):
 
 
 class Image(models.Model):
-    name = models.CharField(max_length=255)
-    image = models.ImageField
+    name = models.CharField(max_length=255, unique=True)
+    image = models.ImageField(upload_to="images/")
     history = HistoricalRecords()

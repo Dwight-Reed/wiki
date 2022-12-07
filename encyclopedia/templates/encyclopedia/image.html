@@ -1,0 +1,10 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+  {{ image.name }}
+{% endblock%}
+
+{% block body %}
+<h2>Image: {{ image.name }}
+  <img src="{{ image.image.url }}" alt="img: {{ image.name }}">
+{% endblock %}

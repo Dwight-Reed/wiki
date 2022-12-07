@@ -1,0 +1,14 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title%}
+  404 Not Found
+{% endblock %}
+
+{% block body %}
+  <div style="text-align: center;">
+    <h1> Error 404</h1>
+    <h2>The page "{{ title }}" does not exist</h2>
+    <a href="{% url 'new_page' %}?title={{ title|urlencode }}">Create this page</a>
+    <a href="{% url 'index' %}">Home</a>
+  </div>
+{% endblock %}

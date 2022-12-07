@@ -4,12 +4,29 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.generic.edit import CreateView
 from markdown2 import markdown
 from random import choice
 
 from . import util
-from .forms import EditForm, NewPageForm, LoginForm, RegisterForm
-from .models import Entry, User
+from .forms import EditForm, ImageCreateForm, NewPageForm, LoginForm, RegisterForm
+from .models import Entry, Image, User
+
+
+class ImageCreateView(CreateView):
+    # template_name="encyclopedia/image_form.html"
+    model = Image
+    form_class = ImageCreateForm
+    # fields = ["name", "image"]
+
+    def get_success_url(self):
+        return reverse("index")
+
+    def get_initial(self):
+        name = self.request.GET.get("name")
+        return {
+            "name": name,
+        }
 
 
 def index(request):
@@ -22,13 +39,26 @@ def wiki(request, title):
     try:
         content = Entry.objects.get(title=title).content
     except ObjectDoesNotExist:
-        return HttpResponseNotFound(render(request, "encyclopedia/not_found.html", {
+        return HttpResponseNotFound(render(request, "encyclopedia/entry_not_found.html", {
             "title": title,
         }))
     return render(request, "encyclopedia/entry.html", {
         "title": title,
         # TODO: Check what safe mode allows
         "content": markdown(content, safe_mode=True)
+    })
+
+
+def image(request, name):
+    try:
+        image = Image.objects.get(name=name)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound(render(request, "encyclopedia/image_not_found.html", {
+            "name": name,
+        }))
+
+    return render(request, "encyclopedia/image.html", {
+        "image": image
     })
 
 
