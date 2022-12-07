@@ -134,32 +134,6 @@ def register(request):
     })
 
 
-def login_view(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if not form.is_valid():
-            return render(request, "registration/login.html", {
-                "message": "invalid form",
-                "form": form,
-            })
-
-        user = authenticate(request, username=form.data["username"], password=form.data["password"])
-        if user == None:
-            return render(request, "registration/login.html", {
-                "message": "Incorrect username or password",
-                "form": form,
-            })
-
-        login(request, user)
-
-
-        return HttpResponseRedirect(reverse("index"))
-
-    return render(request, "registration/login.html", {
-        "form": LoginForm(),
-    })
-
-
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
