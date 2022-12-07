@@ -12,7 +12,7 @@ urlpatterns = [
     path("search", views.search_results, name="search_results"),
     path("new_page", views.new_page, name="new_page"),
     path("wiki/<str:title>/edit", views.edit, name="edit"),
-    path("wiki/random", views.random, name="random"),
+    path("wiki/random", views.random_page, name="random"),
     path("login", auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_field_name=views.index), name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),

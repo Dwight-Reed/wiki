@@ -4,8 +4,10 @@ from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 from simple_history.models import HistoricalRecords
 
+
 class User(AbstractUser):
     pass
+
 
 class Entry(models.Model):
     title = models.CharField(max_length=255)
@@ -14,6 +16,7 @@ class Entry(models.Model):
 
     class Meta:
         ordering = ["title"]
+
         constraints = [
             # Case-insensitive unique title
             UniqueConstraint(
@@ -21,3 +24,9 @@ class Entry(models.Model):
                 name="title_unique",
             ),
         ]
+
+
+class Image(models.Model):
+    name = models.CharField(max_length=255)
+    image = models.ImageField
+    history = HistoricalRecords()

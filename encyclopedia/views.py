@@ -5,8 +5,6 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from markdown2 import markdown
-from os import listdir
-from os.path import splitext
 from random import choice
 
 from . import util
@@ -106,11 +104,9 @@ def edit(request, title):
     })
 
 
-# random page
-def random(request):
-    return HttpResponseRedirect(reverse("wiki", args={
-            splitext(choice(listdir("entries")))[0]
-        }))
+def random_page(request):
+    result = choice(Entry.objects.values_list("title", flat=True))
+    return HttpResponseRedirect(reverse("wiki", args={result}))
 
 
 def register(request):
