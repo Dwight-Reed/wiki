@@ -53,7 +53,6 @@ def search(request):
     return JsonResponse({"results": results})
 
 
-# TODO: Create new page link broken when not logged in
 @login_required
 def new_page(request):
     if request.method == "POST":
@@ -121,7 +120,6 @@ def register(request):
             username = form.data.get("username")
             email = form.data.get("email")
             password = form.data.get("password1")
-            # user = User(username=username, email=email, password=password)
             user = User.objects.create_user(username, email, password)
             user.save()
             login(request, user)
@@ -129,7 +127,6 @@ def register(request):
 
         return render(request, "registration/register.html", {
             "form": form,
-            # "errors": [form.error_messages[error] for error in form.errors]
         })
 
     return render(request, "registration/register.html", {

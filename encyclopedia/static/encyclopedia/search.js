@@ -1,9 +1,9 @@
 let timeoutID
 
 function search() {
-  let searchField = document.querySelector('#myInput')
+  let searchField = document.querySelector('#dropdown-search')
   let dropdown = document.querySelector('.dropdown-menu')
-  // Only send requests if there has been no input for 200ms
+  // Only send requests if there has been no input for 150
   clearTimeout(timeoutID)
   timeoutID = setTimeout(() => {
     if (searchField.value == '') {
@@ -28,7 +28,7 @@ function search() {
         boldDropdown()
       })
     })
-  }, 200)
+  }, 150)
   // Update bolded text after the query is changed
   boldDropdown()
 }

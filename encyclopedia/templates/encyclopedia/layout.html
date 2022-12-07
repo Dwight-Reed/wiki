@@ -29,16 +29,18 @@
         </div>
         <form action="{% url 'search_results' %}">
           <div class="dropdown">
-            <input type="text" name="q" class="dropdown-toggle" autocomplete="off" data-bs-toggle="dropdown" placeholder="Search..." id="myInput" aria-expanded="false" onkeyup="search()" onfocus="focus()" onfocusout="focusOut()">
+            <input type="text" name="q" class="dropdown-toggle form-control" autocomplete="off" data-bs-toggle="dropdown" placeholder="Search..." id="dropdown-search" aria-expanded="false" onkeyup="search()">
             <ul class="dropdown-menu"></ul>
           </div>
         </form>
         <div>
           <a href="{% url 'index' %}">Home</a>
         </div>
-        <div>
-          <a href="{% url 'new_page' %}">Create New Page</a>
-        </div>
+        {% if user.is_authenticated %}
+          <div>
+            <a href="{% url 'new_page' %}">Create New Page</a>
+          </div>
+        {% endif %}
         <div>
           <a href="{% url 'random' %}">Random Page</a>
         </div>
