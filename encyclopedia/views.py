@@ -1,4 +1,5 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
@@ -9,24 +10,49 @@ from markdown2 import markdown
 from random import choice
 
 from . import util
-from .forms import EditForm, ImageCreateForm, NewPageForm, LoginForm, RegisterForm
+from .forms import EditForm, EntryCreateForm, ImageCreateForm, RegisterForm
 from .models import Entry, Image, User
 
 
-class ImageCreateView(CreateView):
-    # template_name="encyclopedia/image_form.html"
+class ImageCreateView(LoginRequiredMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
-    # fields = ["name", "image"]
-
-    def get_success_url(self):
-        return reverse("index")
 
     def get_initial(self):
         name = self.request.GET.get("name")
         return {
             "name": name,
         }
+
+    def form_valid(self, form):
+        # Save form for use when redirecting in self.get_success_url()
+        self.form = form
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        name = self.form.cleaned_data["name"]
+        return reverse("image", args={name})
+
+
+
+
+class EntryCreateView(LoginRequiredMixin, CreateView):
+    model = Entry
+    form_class = EntryCreateForm
+
+    def get_initial(self):
+        title = self.request.GET.get("title")
+        return {
+            "title": title,
+        }
+
+    def form_valid(self, form):
+        self.form = form
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        title = self.form.cleaned_data["title"]
+        return reverse("wiki", args={title})
 
 
 def index(request):
@@ -79,33 +105,6 @@ def search(request):
 
     results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
     return JsonResponse({"results": results})
-
-
-@login_required
-def new_page(request):
-    if request.method == "POST":
-        form = NewPageForm(request.POST)
-
-        if form.is_valid():
-            title = form.data["title"]
-            content = form.data["content"]
-            if Entry.objects.filter(title=title).exists():
-                return render(request, "encyclopedia/new_page.html", {
-                    "form": form,
-                    "message": f'Page "{title}" already exists',
-                })
-
-            Entry.objects.create(title=title, content=content)
-            return HttpResponseRedirect(reverse("wiki", args={title}))
-
-        return render(request, "encyclopedia/new_page.html", {
-            "form": form,
-            "message": "Invalid form",
-        })
-
-    return render(request, "encyclopedia/new_page.html", {
-        "form": NewPageForm(),
-    })
 
 
 @login_required

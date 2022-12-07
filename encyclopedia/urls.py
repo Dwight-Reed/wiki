@@ -14,8 +14,8 @@ urlpatterns = [
     path("image/<str:name>", views.image, name="image"),
 
     # Create pages
-    path("new_page", views.new_page, name="new_page"),
-    path("new_image", login_required(views.ImageCreateView.as_view()), name="new_image"),
+    path("new_page", views.EntryCreateView.as_view(), name="new_page"),
+    path("new_image", views.ImageCreateView.as_view(), name="new_image"),
 
     # Auth
     path("login", auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_field_name=views.index), name="login"),

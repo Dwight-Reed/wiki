@@ -1,10 +1,8 @@
 from django import forms
-from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
-from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .models import Image, User
+from .models import Entry, Image, User
 
 
 class EditForm(forms.Form):
@@ -17,11 +15,25 @@ class EditForm(forms.Form):
         }), label="")
 
 
-class NewPageForm(EditForm):
-    title = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Title"}), label="")
+class EntryCreateForm(forms.ModelForm):
+    class Meta:
+        model = Entry
+        fields = ["title", "content"]
 
-    # place title before content
-    field_order = ["title", "content"]
+        widgets = {
+            "title": forms.TextInput(attrs={
+                "placeholder": "Title",
+            }),
+            "content": forms.Textarea(attrs={
+                "placeholder": "Content",
+                "class": "form-control",
+            }),
+        }
+
+        labels = {
+            "title": "",
+            "content": "",
+        }
 
 
 class ImageCreateForm(forms.ModelForm):
