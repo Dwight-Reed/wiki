@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -14,22 +13,12 @@ from . import util
 from .forms import EditForm, NewPageForm, LoginForm, RegisterForm
 from .models import Entry, User
 
+
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "titles": list(Entry.objects.all().values_list("title", flat=True)),
     })
 
-def wiki_old(request, entry):
-    content = util.get_entry(entry)
-    if content:
-        return render(request, "encyclopedia/entry.html", {
-            "entry": entry,
-            "content": markdown(content)
-        })
-    else:
-        return HttpResponseNotFound(render(request, "encyclopedia/not_found.html", {
-        "entry": entry
-        }))
 
 def wiki(request, title):
     try:
@@ -45,25 +34,6 @@ def wiki(request, title):
     })
 
 
-def search_results_old(request):
-
-    query = request.GET.get("q")
-    content = util.get_entry(query)
-    if content:
-        return HttpResponseRedirect(f"wiki/{query}")
-    else:
-        results = []
-        for entry in util.list_entries():
-            if entry.lower().find(query.lower()) != -1:
-                results.append(entry)
-
-        return render(request, "encyclopedia/search.html", {
-            "query": query,
-            "results": results,
-            "result_count": len(results)
-        })
-
-
 def search_results(request):
     query = request.GET.get("q")
     results = util.generic_search(query)
@@ -75,43 +45,13 @@ def search_results(request):
         "result_count": len(results)
     })
 
+
 def search(request):
     query = request.GET.get("q")
 
     results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
     return JsonResponse({"results": results})
 
-@login_required
-def new_page_old(request):
-
-    if request.method == "POST":
-        form = NewPageForm(request.POST)
-
-        # validate form
-        if form.is_valid():
-            form.clean()
-            if form.errors:
-                return render(request, "encyclopedia/new_page.html", {
-                    "form": form
-                })
-
-            title = form.cleaned_data["title"]
-            content = form.cleaned_data["content"]
-
-            # write file to disk
-            with open(f"entries/{title}.md", "w") as file:
-                file.write(content)
-
-            return HttpResponseRedirect(f"wiki/{title}")
-        else:
-            return render(request, "encyclopedia/new_page.html", {
-                "form": form
-            })
-
-    else:
-        return render(request, "encyclopedia/new_page.html", {
-            "form": NewPageForm()
-        })
 
 # TODO: Create new page link broken when not logged in
 @login_required
@@ -140,33 +80,6 @@ def new_page(request):
         "form": NewPageForm(),
     })
 
-@login_required
-def edit_old(request, entry):
-    if request.method == "POST":
-        form = EditForm(request.POST)
-
-        # validate form
-        if form.is_valid():
-            content = form.cleaned_data["content"]
-            entry = form.data["entry"]
-
-            # write file to disk
-            with open(f"entries/{entry}.md", "w") as file:
-                file.write(content)
-
-            return HttpResponseRedirect(f"wiki/{entry}")
-        else:
-            return render(request, "encyclopedia/edit.html", {
-                "form": form
-            })
-
-    else:
-        return render(request, "encyclopedia/edit.html", {
-            "form": EditForm({
-                "content": util.get_entry(entry)
-            }),
-            "entry": entry
-        })
 
 @login_required
 def edit(request, title):
@@ -200,6 +113,7 @@ def random(request):
             splitext(choice(listdir("entries")))[0]
         }))
 
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -221,6 +135,7 @@ def register(request):
     return render(request, "registration/register.html", {
         "form": RegisterForm(),
     })
+
 
 def login_view(request):
     if request.method == "POST":
@@ -246,6 +161,7 @@ def login_view(request):
     return render(request, "registration/login.html", {
         "form": LoginForm(),
     })
+
 
 def logout_view(request):
     logout(request)
