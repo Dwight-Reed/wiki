@@ -22,6 +22,7 @@ class Entry(models.Model):
             UniqueConstraint(
                 Lower("title"),
                 name="title_unique",
+                violation_error_message="A page with that title already exists",
             ),
         ]
 
