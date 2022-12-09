@@ -2,10 +2,15 @@
 {% load static %}
 
 {% block title %}
-    {{ title }}
+  {{ title }}
 {% endblock %}
 
 {% block body %}
-    <a href={% url 'edit' title %}>Edit</a>
-    {{ content|safe }}
+  <a href={% url 'edit' title %}>Edit</a>
+  {{ content|safe }}
+{% endblock %}
+
+{% block script %}
+  <link rel="stylesheet" href="{% static 'encyclopedia/codehilite.css' %}">
+
 {% endblock %}

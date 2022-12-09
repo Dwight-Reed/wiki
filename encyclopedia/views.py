@@ -1,18 +1,17 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic.edit import CreateView
-from markdown2 import markdown
+from markdown import markdown
 from random import choice
 
-from . import util
+from . import util, wiki_syntax
 from .forms import EditForm, EntryCreateForm, ImageCreateForm, RegisterForm
 from .models import Entry, Image, User
-
 
 class ImageCreateView(LoginRequiredMixin, CreateView):
     model = Image
@@ -63,15 +62,31 @@ def index(request):
 
 def wiki(request, title):
     try:
-        content = Entry.objects.get(title=title).content
+        entry = Entry.objects.get(title__iexact=title)
     except ObjectDoesNotExist:
         return HttpResponseNotFound(render(request, "encyclopedia/entry_not_found.html", {
             "title": title,
         }))
+
+    processed_content = markdown(
+        entry.content,
+        output_format="html5",
+        extensions=[
+            wiki_syntax.WikiSyntax(),
+            "abbr",
+            "attr_list",
+            "codehilite",
+            "fenced_code",
+            "footnotes",
+            "sane_lists",
+            "tables",
+            "toc",
+
+        ],
+    )
     return render(request, "encyclopedia/entry.html", {
         "title": title,
-        # TODO: Check what safe mode allows
-        "content": markdown(content, safe_mode=True)
+        "content": processed_content,
     })
 
 
