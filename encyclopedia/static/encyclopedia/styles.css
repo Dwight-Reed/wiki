@@ -1,50 +1,82 @@
 body {
-    margin: 0;
-    background-color: white;
+  background-color: white;
 }
 
 code {
-    white-space: pre;
+  white-space: pre;
 }
 
 h1 {
-    margin-top: 0px;
-    padding-top: 20px;
+  margin-top: 0px;
+  padding-top: 20px;
 }
 
-textarea {
-    height: 90vh;
-    width: 80%;
-}
 
 .main {
-    padding: 10px;
+  padding: 10px;
 }
 
 .search {
-    width: 100%;
-    font-size: 15px;
-    line-height: 15px;
+  width: 100%;
+  font-size: 15px;
+  line-height: 15px;
 }
 
 .sidebar {
-    background-color: #f0f0f0;
-    height: 100vh;
-    padding: 20px;
+  background-color: #f0f0f0;
+  height: 100vh;
+  padding: 20px;
 }
 
 .sidebar h2 {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .dropdown-menu {
-    min-width: 100%;
+  min-width: 100%;
 }
 
 .broken-link {
-    color: #e26161;
+  color: #e26161;
 }
 
 table, thead, tbody, th, td {
-    border: 1px solid #000000;
+  border: 1px solid #000000;
+}
+
+.row {
+  margin: 0;
+}
+
+/* https://stackoverflow.com/a/24979148/15843982 */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.row.vertical-row {
+  height: 100%;
+}
+
+.box .row.header {
+  flex: 0 1 auto;
+}
+
+.box .row.content {
+  flex: 1 1 auto;
+  height: 100%;
+}
+
+.box .row.footer {
+  flex: 0 1 40px;
+}
+
+.entry-form {
+  height: 100%;
 }

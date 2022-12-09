@@ -1,7 +1,6 @@
 {% extends "encyclopedia/layout.html" %}
 {% load static %}
 {% block body %}
-  {{ message }}
   <form action="{% url 'register' %}" method="post">
     {% csrf_token %}
     {% comment %} using {{ form }} adds an extra line break before help_text {% endcomment %}
@@ -13,6 +12,6 @@
     {{ form.password1 }}
     {{ form.password2 }}
     {{ form.password2.errors}}
-    <input type="submit" value="Submit">
+    <input type="submit" class="btn btn-primary" value="Submit">
   </form>
 {% endblock %}

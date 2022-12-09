@@ -5,12 +5,12 @@
   {{ title }}
 {% endblock %}
 
-{% block body %}
-  <a href={% url 'edit' title %}>Edit</a>
-  {{ content|safe }}
-{% endblock %}
-
 {% block script %}
   <link rel="stylesheet" href="{% static 'encyclopedia/codehilite.css' %}">
+{% endblock %}
 
+{% block body %}
+  <a href={% url 'edit' title %} class="btn btn-secondary btn-sm">Edit</a>
+  <h1>{{ title }}</h1><hr>
+  {{ content|safe }}
 {% endblock %}

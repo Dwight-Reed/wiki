@@ -8,10 +8,7 @@ from .models import Entry, Image, User
 class EditForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(attrs={
         "placeholder": "Content",
-        # TODO: move to styles.css
-        "style": "width: 100%; max-height: 100%;",
-        "rows": "100",
-        "class": "form-control",
+        "class": "form-control row content",
         }), label="")
 
 
@@ -23,10 +20,11 @@ class EntryCreateForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={
                 "placeholder": "Title",
+                "class": "form-control row header",
             }),
             "content": forms.Textarea(attrs={
                 "placeholder": "Content",
-                "class": "form-control",
+                "class": "form-control row content",
             }),
         }
 
@@ -49,7 +47,9 @@ class ImageCreateForm(forms.ModelForm):
                 "class": "form-control",
                 "autofocus": "true"
             }),
-            "image": forms.FileInput(),
+            "image": forms.FileInput(attrs={
+                "class": "form-control",
+            }),
         }
 
         labels = {
