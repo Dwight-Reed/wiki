@@ -10,9 +10,9 @@
 {% endblock %}
 
 {% block body %}
-  <h2>Editing "{{ title }}"</h2>
   <form class="entry-form" action="{% url 'edit' title %}" method="post">
     <div class="box">
+      <h2>Editing "{{ title }}"</h2>
       {% csrf_token %}
       {{ form }}
       <div><input type="submit" class="btn btn-primary" value="Save" onclick="onSubmitClicked()"></div>
