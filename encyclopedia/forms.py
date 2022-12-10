@@ -5,11 +5,36 @@ from django.utils.translation import gettext_lazy as _
 from .models import Entry, Image, User
 
 
-class EditForm(forms.Form):
-    content = forms.CharField(widget=forms.Textarea(attrs={
-        "placeholder": "Content",
-        "class": "form-control row content",
-        }), label="")
+class EntryContentUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Entry
+        fields = ["content"]
+        widgets = {
+            "text": forms.Textarea(attrs={
+            "placeholder": "Content",
+            "class": "form-control row content",
+            }),
+
+        }
+        labels = {
+            "content": "",
+        }
+
+
+class EntryTalkUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Entry
+        fields = ["talk"]
+        widgets = {
+            "talk": forms.Textarea(attrs={
+            "placeholder": "Content",
+            "class": "form-control row content",
+            }),
+
+        }
+        labels = {
+            "talk": "",
+        }
 
 
 class EntryCreateForm(forms.ModelForm):
@@ -39,7 +64,6 @@ class ImageCreateForm(forms.ModelForm):
         model = Image
 
         fields = ["name", "image"]
-        # fields = ["image"]
 
         widgets = {
             "name": forms.TextInput(attrs={

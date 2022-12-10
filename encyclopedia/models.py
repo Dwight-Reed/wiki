@@ -12,6 +12,7 @@ class User(AbstractUser):
 class Entry(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
+    talk = models.TextField(null=True)
     history = HistoricalRecords()
 
     class Meta:

@@ -5,23 +5,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from markdown import markdown
 from random import choice
 
 from . import util, wiki_syntax
-from .forms import EditForm, EntryCreateForm, ImageCreateForm, RegisterForm
+from .forms import EntryContentUpdateForm, EntryCreateForm, EntryTalkUpdateForm, ImageCreateForm, RegisterForm
 from .models import Entry, Image, User
 
 class ImageCreateView(LoginRequiredMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
-
-    def get_initial(self):
-        name = self.request.GET.get("name")
-        return {
-            "name": name,
-        }
 
     def form_valid(self, form):
         # Save form for use when redirecting in self.get_success_url()
@@ -33,17 +27,9 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
         return reverse("image", args={name})
 
 
-
-
 class EntryCreateView(LoginRequiredMixin, CreateView):
     model = Entry
     form_class = EntryCreateForm
-
-    def get_initial(self):
-        title = self.request.GET.get("title")
-        return {
-            "title": title,
-        }
 
     def form_valid(self, form):
         self.form = form
@@ -54,6 +40,36 @@ class EntryCreateView(LoginRequiredMixin, CreateView):
         return reverse("wiki", args={title})
 
 
+class EntryUpdateView(LoginRequiredMixin, UpdateView):
+    model = Entry
+    form_class = EntryContentUpdateForm
+    template_name_suffix = "_update_form"
+
+    # Set form based on title format (EntryTalkUpdateForm if title starts with "wiki:")
+    def get_form_class(self):
+        stripped_title = util.strip_title(self.kwargs.get("title"))
+        if stripped_title[1]:
+            return EntryTalkUpdateForm
+        return EntryContentUpdateForm
+
+    # Set title for use in templates
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.kwargs.get("title")
+        return context
+
+    # Get object based on title (remove "talk:" prefix if necessary)
+    def get_object(self, queryset=None):
+        queryset = self.get_queryset()
+        title = self.kwargs.get("title")
+        title = util.strip_title(title)
+        obj = queryset.get(title=title)
+        return obj
+
+    def get_success_url(self):
+        return reverse("wiki", args={self.kwargs.get("title")})
+
+
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "titles": list(Entry.objects.all().values_list("title", flat=True)),
@@ -61,15 +77,27 @@ def index(request):
 
 
 def wiki(request, title):
+    stripped_title = util.strip_title(title)
     try:
-        entry = Entry.objects.get(title__iexact=title)
+        entry = Entry.objects.get(title__iexact=stripped_title[0])
     except ObjectDoesNotExist:
         return HttpResponseNotFound(render(request, "encyclopedia/entry_not_found.html", {
-            "title": title,
+            "title": stripped_title[0],
         }))
 
+    if stripped_title[1]:
+        content = entry.talk
+        template = "encyclopedia/talk.html"
+    else:
+        content = entry.content
+        template = "encyclopedia/entry.html"
+
+    # markdown raises an exception when the input is empty (talk pages can be empty)
+    if not content:
+        content = "## This talk page has no content"
+
     processed_content = markdown(
-        entry.content,
+        content,
         output_format="html5",
         extensions=[
             wiki_syntax.WikiSyntax(),
@@ -81,10 +109,10 @@ def wiki(request, title):
             "sane_lists",
             "tables",
             "toc",
-
         ],
     )
-    return render(request, "encyclopedia/entry.html", {
+
+    return render(request, template, {
         "title": title,
         "content": processed_content,
     })
@@ -120,32 +148,6 @@ def search(request):
 
     results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
     return JsonResponse({"results": results})
-
-
-@login_required
-def edit(request, title):
-    if request.method == "POST":
-        form = EditForm(request.POST)
-
-        if form.is_valid():
-            content = form.data["content"]
-            entry = Entry.objects.get(title=title)
-            entry.content = content
-            entry.save()
-            return HttpResponseRedirect(reverse("wiki", args={title}))
-        return render(request, "encyclopedia/edit.html", {
-            "title": title,
-            # TODO: don't use generic message
-            "message": "invalid form",
-        })
-
-
-    return render(request, "encyclopedia/edit.html", {
-        "title": title,
-        "form": EditForm({
-            "content": Entry.objects.get(title=title).content
-        })
-    })
 
 
 def random_page(request):

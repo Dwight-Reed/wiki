@@ -1,5 +1,6 @@
 {% extends "encyclopedia/layout.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
   {{ title }}
@@ -10,8 +11,8 @@
 {% endblock %}
 
 {% block body %}
-  <a href="{% url 'wiki' 'talk:'|add:title %}" class="btn btn-secondary btn-sm">Talk</a>
+  <a href="{% url 'wiki' title|cut:'talk:' %}" class="btn btn-secondary btn-sm">Back</a>
   <a href="{% url 'edit' title %}" class="btn btn-secondary btn-sm">Edit</a>
-  <h1>{{ title }}</h1><hr>
+  <h1>{{ title|format_title }}</h1><hr>
   {{ content|safe }}
 {% endblock %}

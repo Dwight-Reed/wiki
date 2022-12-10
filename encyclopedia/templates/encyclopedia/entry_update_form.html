@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-  {{ title }} - Editing
+  Editing "{{ title }}"
 {% endblock %}
 
 {% block script %}
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block body %}
-  <form class="entry-form" action="{% url 'edit' title %}" method="post">
+  <form class="entry-form" method="post">
     <div class="box">
       <h2>Editing "{{ title }}"</h2>
       {% csrf_token %}
