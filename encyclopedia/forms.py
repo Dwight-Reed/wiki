@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
-from django.utils.translation import gettext_lazy as _
 
 from .models import Entry, Image, User
 
@@ -14,7 +13,6 @@ class EntryContentUpdateForm(forms.ModelForm):
             "placeholder": "Content",
             "class": "form-control row content",
             }),
-
         }
         labels = {
             "content": "",
@@ -30,7 +28,6 @@ class EntryTalkUpdateForm(forms.ModelForm):
             "placeholder": "Content",
             "class": "form-control row content",
             }),
-
         }
         labels = {
             "talk": "",

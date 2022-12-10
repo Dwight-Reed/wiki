@@ -1,5 +1,4 @@
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect, HttpResponseNotFound, JsonResponse
@@ -134,8 +133,6 @@ def image(request, name):
 def search_results(request):
     query = request.GET.get("q")
     results = util.generic_search(query)
-    title_matches = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True).order_by("title"))
-    content_matches = list(Entry.objects.filter(content__icontains=query).values_list("title", flat=True))
     return render(request, "encyclopedia/search.html", {
         "query": query,
         "results": results,

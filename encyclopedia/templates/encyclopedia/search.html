@@ -6,14 +6,7 @@
 
 {% block body %}
   <h1>Search Results for "{{ query }}"</h1>
-
-  <h3>
-    {% if result_count == 1 %}
-      {{ result_count }} result found
-    {% else %}
-      {{result_count }} results found
-    {% endif %}
-  </h3>
+  <h3>{{ result_count }} result{% if result_count == 1 %}s{% endif %} found</h3>
   <ul>
     {% for result in results %}
       <li>

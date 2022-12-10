@@ -5,10 +5,10 @@
 {% endblock%}
 
 {% block body %}
-      <div style="text-align: center;">
-        <h1> Error 404</h1>
-        <h2>The image "{{ name }}" does not exist</h2>
-        <a href="{% url 'new_image' %}?name={{ name|urlencode }}">Create this image</a>
-        <a href="{% url 'index' %}">Home</a>
-      </div>
+  <div style="text-align: center;">
+    <h1> Error 404</h1>
+    <h2>The image "{{ name }}" does not exist</h2>
+    <a href="{% url 'new_image' %}?name={{ name|urlencode }}">Create this image</a>
+    <a href="{% url 'index' %}">Home</a>
+  </div>
 {% endblock %}
