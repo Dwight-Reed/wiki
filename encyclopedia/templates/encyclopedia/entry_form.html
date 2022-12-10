@@ -14,7 +14,7 @@
     <div class="box">
       {% csrf_token %}
       {{ form }}
-      <div><input type="submit" class="btn btn-primary" value="Submit"></div>
+      <div><input type="submit" class="btn btn-primary" value="Submit" onclick="onSubmitClicked()"></div>
     </div>
   </form>
 {% endblock %}
