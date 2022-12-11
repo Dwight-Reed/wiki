@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from .models import Entry, Image, User
 
 
@@ -67,6 +68,11 @@ class EntryCreateForm(forms.ModelForm):
             "title": "",
             "content": "",
         }
+
+        validators = [
+            # Prevent title from conflicting with "talk:" prefix
+            RegexValidator("\:", inverse_match=True),
+        ]
 
 
 class ImageCreateForm(forms.ModelForm):
