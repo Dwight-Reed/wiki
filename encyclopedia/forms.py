@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UsernameField
-
+from django.core.exceptions import ValidationError
 from .models import Entry, Image, User
 
 
@@ -9,7 +9,7 @@ class EntryContentUpdateForm(forms.ModelForm):
         model = Entry
         fields = ["content"]
         widgets = {
-            "text": forms.Textarea(attrs={
+            "content": forms.Textarea(attrs={
             "placeholder": "Content",
             "class": "form-control row content",
             }),
@@ -17,6 +17,13 @@ class EntryContentUpdateForm(forms.ModelForm):
         labels = {
             "content": "",
         }
+
+    # This prevents the history field from tracking edits that changed nothing
+    def clean_content(self):
+        data = self.cleaned_data["content"]
+        if data == self.instance.content:
+            raise ValidationError("Content was not modified")
+        return data
 
 
 class EntryTalkUpdateForm(forms.ModelForm):
@@ -32,6 +39,12 @@ class EntryTalkUpdateForm(forms.ModelForm):
         labels = {
             "talk": "",
         }
+
+    def clean_talk(self):
+        data = self.cleaned_data["talk"]
+        if data == self.instance.talk:
+            raise ValidationError("Content was not modified")
+        return data
 
 
 class EntryCreateForm(forms.ModelForm):
