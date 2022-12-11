@@ -17,6 +17,13 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
     model = Image
     form_class = ImageCreateForm
 
+    # Fill title field when linked from a 404 page
+    def get_initial(self):
+        name = self.request.GET.get("name")
+        return {
+            "name": name,
+        }
+
     def form_valid(self, form):
         # Save form for use when redirecting in self.get_success_url()
         self.form = form
@@ -30,6 +37,12 @@ class ImageCreateView(LoginRequiredMixin, CreateView):
 class EntryCreateView(LoginRequiredMixin, CreateView):
     model = Entry
     form_class = EntryCreateForm
+
+    def get_initial(self):
+        title = self.request.GET.get("title")
+        return {
+            "title": title,
+        }
 
     def form_valid(self, form):
         self.form = form
