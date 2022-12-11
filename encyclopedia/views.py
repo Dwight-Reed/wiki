@@ -46,8 +46,8 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
 
     # Set form based on title format (EntryTalkUpdateForm if title starts with "wiki:")
     def get_form_class(self):
-        stripped_title = util.strip_title(self.kwargs.get("title"))
-        if stripped_title[1]:
+        is_talk = util.strip_title(self.kwargs.get("title"))[1]
+        if is_talk:
             return EntryTalkUpdateForm
         return EntryContentUpdateForm
 
@@ -61,8 +61,8 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         queryset = self.get_queryset()
         title = self.kwargs.get("title")
-        title = util.strip_title(title)
-        obj = queryset.get(title=title)
+        stripped_title = util.strip_title(title)[0]
+        obj = queryset.get(title=stripped_title)
         return obj
 
     def get_success_url(self):
@@ -71,20 +71,20 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
-        "titles": list(Entry.objects.all().values_list("title", flat=True)),
+        "titles": list(Entry.objects.values_list("title", flat=True)),
     })
 
 
 def wiki(request, title):
-    stripped_title = util.strip_title(title)
+    stripped_title, is_talk = util.strip_title(title)
     try:
-        entry = Entry.objects.get(title__iexact=stripped_title[0])
+        entry = Entry.objects.get(title__iexact=stripped_title)
     except ObjectDoesNotExist:
         return HttpResponseNotFound(render(request, "encyclopedia/entry_not_found.html", {
-            "title": stripped_title[0],
+            "title": stripped_title,
         }))
 
-    if stripped_title[1]:
+    if is_talk:
         content = entry.talk
         template = "encyclopedia/talk.html"
     else:
