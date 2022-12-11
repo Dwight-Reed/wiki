@@ -119,6 +119,7 @@ converts ISO8601 (or any format that can be converted into a Date object) into t
     - [Tables](https://python-markdown.github.io/extensions/tables/)
     - [Table of Contents](https://python-markdown.github.io/extensions/toc/)
     - WikiSyntax (created by me)
+    - Currently, markdown will not be processed if it is in HTML tags (that are inside the markdown document), the extension did not work properly
 - Pages are now stored in a database
 - User authentication
 - History and diffs
