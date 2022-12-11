@@ -10,9 +10,11 @@
 {% endblock %}
 
 {% block body %}
-  <a href="{% url 'edit' title %}" class="btn btn-secondary btn-sm">Edit</a>
-  <a href="{% url 'history' title %}" class="btn btn-secondary btn-sm">History</a>
-  <a href="{% url 'wiki' 'talk:'|add:title %}" class="btn btn-secondary btn-sm">Talk</a>
+  <div>
+    <a href="{% url 'edit' title %}" class="btn btn-secondary btn-sm">Edit</a>
+    <a href="{% url 'history' title %}" class="btn btn-secondary btn-sm">History</a>
+    <a href="{% url 'wiki' 'talk:'|add:title %}" class="btn btn-secondary btn-sm">Talk</a>
+  </div>
   <h1>{{ title }}</h1><hr>
   {{ content|safe }}
 {% endblock %}

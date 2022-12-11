@@ -11,9 +11,11 @@
 {% endblock %}
 
 {% block body %}
-  <a href="{% url 'edit' title %}" class="btn btn-secondary btn-sm">Edit</a>
-  <a href="{% url 'wiki' title|cut:'talk:' %}" class="btn btn-secondary btn-sm">Entry</a>
-  <a href="{% url 'history' title %}" class="btn btn-secondary btn-sm">History</a>
+  <div>
+    <a href="{% url 'edit' title %}" class="btn btn-secondary btn-sm">Edit</a>
+    <a href="{% url 'wiki' title|cut:'talk:' %}" class="btn btn-secondary btn-sm">Entry</a>
+    <a href="{% url 'history' title %}" class="btn btn-secondary btn-sm">History</a>
+  </div>
   <h1>{{ title|format_title }}</h1><hr>
   {{ content|safe }}
 {% endblock %}
