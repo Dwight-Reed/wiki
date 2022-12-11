@@ -27,6 +27,8 @@
 # Wiki
 This is my final project for CS-33a
 
+I've included an example database including the entry "Markdown Examples" that documents basic markdown syntax, this entry was created with multiple edits, so the history page has some info, the most recent edit has the most changes. The talk page does not have much on it (as it has no more features than the content page)
+
 ## Files
 
 ### views.py
@@ -107,8 +109,8 @@ if part of the title matches the query, that part of it will be bold
 converts ISO8601 (or any format that can be converted into a Date object) into the user's local timezone
 
 ## Full list of new features/changes
-- Markdown changes
-  - Switched to markdown from markdown2 because markdown2 is not well documented (and does not have any docs for the extension API as far as I could tell)
+- Markdown:
+  - Switched to python-markdown from markdown2 because markdown2 is not well documented (and does not have any docs for the extension API as far as I could tell). Although python-markdown
   - added the following markdown extensions:
     - [Abbreviations](https://python-markdown.github.io/extensions/abbreviations/)
     - [Attribute Lists](https://python-markdown.github.io/extensions/attr_list/)
@@ -119,7 +121,7 @@ converts ISO8601 (or any format that can be converted into a Date object) into t
     - [Tables](https://python-markdown.github.io/extensions/tables/)
     - [Table of Contents](https://python-markdown.github.io/extensions/toc/)
     - WikiSyntax (created by me)
-    - Currently, markdown will not be processed if it is in HTML tags (that are inside the markdown document), the extension did not work properly
+  - In most cases, markdown will not be processed if it is inside of HTML tags (that are inside the markdown document), the extension did not work properly
 - Pages are now stored in a database
 - User authentication
 - History and diffs
