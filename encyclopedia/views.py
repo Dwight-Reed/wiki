@@ -141,7 +141,7 @@ def history(request, title):
             elif record.content != record.prev_record.content:
                 hist.append(record)
         except AttributeError:
-            pass
+            hist.append(record)
 
     return render(request, "encyclopedia/history.html", {
         "title": title,
