@@ -42,7 +42,8 @@ get_form_class avoids needing separate views for each of the forms that update e
   - entry_update_form.html
 
 #### wiki
-Displays entry content and talk pages
+Displays entry content and talk pages\
+Talk pages are differentiated by having the "talk:" prefix
 
 #### image
 Single image pages
