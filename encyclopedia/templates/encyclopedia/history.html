@@ -1,0 +1,36 @@
+{% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'encyclopedia/timezone.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+  {% with stripped_title=title|cut:'talk' %}
+  <a href="{% url 'wiki' stripped_title %}" class="btn btn-secondary btn-sm">Entry</a>
+  <a href="{% url 'wiki' 'talk:'|add:stripped_title %}" class="btn btn-secondary btn-sm">Talk</a>
+  {% endwith %}
+  <h1>{{ title }}</h1><hr>
+  <table>
+    <thead>
+      <tr>
+        <th>time</th>
+        <th>user</th>
+        <th>changed</th>
+      </th>
+    </thead>
+    <tbody>
+      {% for record in history %}
+      <tr>
+        <td class="date">{{ record.history_date|date:"c" }}</td>
+        <td>{{ record.history_user }}</td>
+        <td><a href="{% url 'diff' title record.history_id %}">diff</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

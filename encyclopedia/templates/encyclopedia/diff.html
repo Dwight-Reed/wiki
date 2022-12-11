@@ -1,0 +1,17 @@
+{% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+{% block title %}
+  {{ title }}
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'encyclopedia/timezone.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+  <a href="{% url 'wiki' title %}" class="btn btn-secondary btn-sm">Entry</a>
+  <a href="{% url 'history' title %}" class="btn btn-secondary btn-sm">History</a>
+  <h1>Diff: {{ title }}</h1><hr>
+  {{ diff|safe }}
+{% endblock %}

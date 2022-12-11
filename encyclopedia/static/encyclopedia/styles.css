@@ -40,10 +40,6 @@ h1 {
   color: #e26161;
 }
 
-table, thead, tbody, th, td {
-  border: 1px solid #000000;
-}
-
 .row {
   margin: 0;
 }
@@ -79,4 +75,42 @@ html, body {
 
 .entry-form {
   height: 100%;
+}
+
+table {
+  width: 100%;
+  border: 0.1em solid gray;
+}
+tbody {
+  margin-bottom: 10px;
+}
+
+td {
+  border: 0.1em solid gray;
+}
+
+tr:last-child:not(tbody:last-child tr) {
+  border-bottom: 0.2em solid black;
+}
+
+.diff-text {
+  width: 50%;
+  padding-left: 0.5em
+}
+
+.diff-line-number {
+  padding: 0.2rem;
+  text-align: right;
+}
+
+.diff_add {
+  background-color:#aaffaa
+}
+
+.diff_chg {
+  background-color:#ffff77
+}
+
+.diff_sub {
+  background-color:#ffaaaa
 }

@@ -8,9 +8,10 @@ from django.views.generic.edit import CreateView, UpdateView
 from markdown import markdown
 from random import choice
 
-from . import util, wiki_syntax
+from . import util, wiki_syntax, diff_generator
 from .forms import EntryContentUpdateForm, EntryCreateForm, EntryTalkUpdateForm, ImageCreateForm, RegisterForm
 from .models import Entry, Image, User
+
 
 class ImageCreateView(LoginRequiredMixin, CreateView):
     model = Image
@@ -114,6 +115,51 @@ def wiki(request, title):
     return render(request, template, {
         "title": title,
         "content": processed_content,
+    })
+
+def history(request, title):
+    stripped_title, is_talk = util.strip_title(title)
+    hist = []
+    for record in Entry.objects.get(title=stripped_title).history.all():
+        try:
+            if is_talk:
+                if record.talk != record.prev_record.talk:
+                    hist.append(record)
+            elif record.content != record.prev_record.content:
+                hist.append(record)
+        except AttributeError:
+            pass
+
+    return render(request, "encyclopedia/history.html", {
+        "title": title,
+        "history": hist,
+    })
+
+
+def history_diff(request, title, pk):
+    stripped_title, is_talk = util.strip_title(title)
+    record = Entry.objects.get(title=stripped_title).history.get(pk=pk)
+    if is_talk:
+        try:
+            new = record.talk.splitlines()
+        except AttributeError:
+            new = ""
+        try:
+            old = record.prev_record.talk.splitlines()
+        except AttributeError:
+            old = ""
+    else:
+        new = record.content.splitlines()
+        try:
+            old = record.prev_record.content.splitlines()
+        except AttributeError:
+            old = ""
+
+    d = diff_generator.CustomHtmlDiff()
+    output = d.make_table(old, new, context=True, numlines=2)
+    return render(request, "encyclopedia/diff.html", {
+        "title": title,
+        "diff": output,
     })
 
 
