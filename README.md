@@ -28,6 +28,7 @@
 This is my final project for CS-33a
 
 I've included an example database including the entry "Markdown Examples" that documents basic markdown syntax, this entry was created with multiple edits, so the history page has some info, the most recent edit has the most changes. The talk page does not have much on it (as it has no more features than the content page)
+To use the example database, either rename it to db.sqlite3 or set DATABASES["default"] to its path (in settings.py)
 
 ## Files
 
