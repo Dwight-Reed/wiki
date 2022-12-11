@@ -14,43 +14,52 @@
     {% endblock %}
   </head>
   <body>
-    <div class="row vertical-row">
-      <div class="sidebar col-lg-2 col-md-3">
-        <h2>Wiki</h2>
-        <div>
-          {% if user.is_authenticated %}
-            Logged in as {{ user.username }}<br>
-            <a href="{% url 'logout' %}">Logout</a>
-          {% else %}
-            Not Logged in<br>
-            <a href="{% url 'login' %}">Login</a><br>
-            <a href="{% url 'register' %}">Register</a>
-          {% endif %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <form action="{% url 'search_results' %}">
+            <div class="dropdown">
+              <input type="text" name="q" class="dropdown-toggle form-control" autocomplete="off" data-bs-toggle="dropdown" placeholder="Search..." id="dropdown-search" aria-expanded="false" onkeyup="search()">
+              <ul class="dropdown-menu"></ul>
+            </div>
+          </form>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {% if user.is_authenticated %}
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'logout' %}">Logout</a>
+              </li>
+            {% else %}
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'login' %}">Login</a>
+              </li>
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'register' %}">Register</a>
+              </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'new_page' %}">New Page</a>
+              </li>
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'new_page' %}">Upload Image</a>
+              </li>
+            {% endif %}
+              <li class="nav-link">
+                <a class="nav-link"  href="{% url 'random' %}">Random Page</a>
+              </li>
+            {% block nav %}
+            {% endblock %}
+          </ul>
         </div>
-        <form action="{% url 'search_results' %}">
-          <div class="dropdown">
-            <input type="text" name="q" class="dropdown-toggle form-control" autocomplete="off" data-bs-toggle="dropdown" placeholder="Search..." id="dropdown-search" aria-expanded="false" onkeyup="search()">
-            <ul class="dropdown-menu"></ul>
-          </div>
-        </form>
-        <div>
-          <a href="{% url 'index' %}">Home</a>
-        </div>
-        {% if user.is_authenticated %}
-          <div>
-            <a href="{% url 'new_page' %}">Create New Page</a>
-          </div>
-        {% endif %}
-        <div>
-          <a href="{% url 'random' %}">Random Page</a>
-        </div>
-        {% block nav %}
-        {% endblock %}
       </div>
-      <div class="main col-lg-10 col-md-9">
-        {% block body %}
-        {% endblock %}
-      </div>
+    </nav>
+    <div class="main">
+      {% block body %}
+      {% endblock %}
     </div>
   </body>
 </html>

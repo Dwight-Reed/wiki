@@ -22,16 +22,6 @@ h1 {
   line-height: 15px;
 }
 
-.sidebar {
-  background-color: #f0f0f0;
-  height: 100vh;
-  padding: 20px;
-}
-
-.sidebar h2 {
-  margin-top: 5px;
-}
-
 .dropdown-menu {
   min-width: 100%;
 }
@@ -95,7 +85,7 @@ tr:last-child:not(tbody:last-child tr) {
 
 .diff-text {
   width: 50%;
-  padding-left: 0.5em
+  padding-left: 0.5em;
 }
 
 .diff-line-number {
@@ -104,13 +94,21 @@ tr:last-child:not(tbody:last-child tr) {
 }
 
 .diff_add {
-  background-color:#aaffaa
+  background-color:#aaffaa;
 }
 
 .diff_chg {
-  background-color:#ffff77
+  background-color:#ffff77;
 }
 
 .diff_sub {
-  background-color:#ffaaaa
+  background-color:#ffaaaa;
+}
+
+.nav-link a {
+  color: rgb(120, 120, 120);
+}
+
+.bg-light {
+  background-color: #f0f0f0 !important;
 }
