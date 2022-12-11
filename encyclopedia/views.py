@@ -133,6 +133,7 @@ def wiki(request, title):
 def history(request, title):
     stripped_title, is_talk = util.strip_title(title)
     hist = []
+    # To determine if a change was made to the talk or the content page, check which field changed since the last record
     for record in Entry.objects.get(title=stripped_title).history.all():
         try:
             if is_talk:
@@ -141,7 +142,11 @@ def history(request, title):
             elif record.content != record.prev_record.content:
                 hist.append(record)
         except AttributeError:
-            hist.append(record)
+            if is_talk:
+                if record.talk:
+                    hist.append(record)
+            else:
+                hist.append(record)
 
     return render(request, "encyclopedia/history.html", {
         "title": title,
