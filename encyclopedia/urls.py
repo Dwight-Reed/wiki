@@ -24,7 +24,7 @@ urlpatterns = [
     path("register/", views.register, name="register"),
 
     # Other
-    path("wiki/random/", views.random_page, name="random"),
+    path("random/", views.random_page, name="random"),
 
     # API
     path("api/search/", views.search, name="search"),
