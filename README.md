@@ -37,13 +37,10 @@ To use the example database, either rename it to db.sqlite3 or set DATABASES["de
 
 #### *CreateView
 views for creating new entries/images (inherit from django's CreateView)
-  - entry_form.html
-  - image_form.html
 
 #### EntryUpdateView
 Updates an entry, titles have a unique constraint, so get_object is overridden to use that instead of pk or slug\
 get_form_class avoids needing separate views for each of the forms that update entry
-  - entry_update_form.html
 
 #### wiki
 Displays entry content and talk pages\
@@ -53,10 +50,9 @@ Talk pages are differentiated by having the "talk:" prefix
 Single image pages
 
 #### search
-api endpoint for the autocomplete search bar
-  - search.js
+api endpoint for the autocomplete search bar (used in search.js)
 
-#### search results
+#### search_results
 view for the normal search (accessed by pressing enter in the autocomplete search bar)
 
 ### forms.py
@@ -64,12 +60,9 @@ Contains all Django forms
 
 #### *CreateForm
 Creates new entries/images
-  - entry_form.html
-  - image_form.html
 
 #### *UpdateForm
 Edits existing pages (I was unable to find a good way to combine the content and talk forms)
-  - entry_update_form.html
 
 ### models.py
 Both non-user models use the django-simple-history package to keep track of changes to the pages
@@ -99,6 +92,9 @@ uses the 'bleach' library to sanitize input (removes tags not specified in ALLOW
 ### diff_generator.py
 Contains CustomHtmlDiff, used to generate diffs between 2 historical records for entry or talk pages\
 Admittedly, I think this is a very hacky approach, if I had more time, I would rewrite this to generate the html I want without overriding methods not meant to be overridden
+
+### custom_filters.py
+Contains a template filter that converts talk:title -> Talk: title (used iin talk.html)
 
 ### \_\_init__.py
 fixes issue where bleach broke some markdown syntax
