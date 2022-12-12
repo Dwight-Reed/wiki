@@ -3,3 +3,4 @@ Django==4.1.1
 django_simple_history==3.2.0
 Markdown==3.4.1
 django_extensions==3.2.1
+pillow==9.1.1
