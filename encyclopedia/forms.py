@@ -11,8 +11,8 @@ class EntryContentUpdateForm(forms.ModelForm):
         fields = ["content"]
         widgets = {
             "content": forms.Textarea(attrs={
-            "placeholder": "Content",
-            "class": "form-control row content",
+                "placeholder": "Content",
+                "class": "form-control row content",
             }),
         }
         labels = {
@@ -33,8 +33,8 @@ class EntryTalkUpdateForm(forms.ModelForm):
         fields = ["talk"]
         widgets = {
             "talk": forms.Textarea(attrs={
-            "placeholder": "Content",
-            "class": "form-control row content",
+                "placeholder": "Content",
+                "class": "form-control row content",
             }),
         }
         labels = {
@@ -85,7 +85,7 @@ class ImageCreateForm(forms.ModelForm):
             "name": forms.TextInput(attrs={
                 "placeholder": "name",
                 "class": "form-control",
-                "autofocus": "true"
+                "autofocus": "true",
             }),
             "image": forms.FileInput(attrs={
                 "class": "form-control",
@@ -133,6 +133,7 @@ class RegisterForm(UserCreationForm):
         strip=False,
         label="",
     )
+
     class Meta():
         model = User
         fields = ["username", "email"]

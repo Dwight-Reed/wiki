@@ -1,5 +1,5 @@
-let initialContent
-let disabled = false
+let initialContent;
+let disabled = false;
 // Disable warning if submitting a valid form
 function onSubmitClicked() {
   if (document.querySelector('.entry-form').checkValidity()) {
@@ -9,10 +9,10 @@ function onSubmitClicked() {
 
 addEventListener('DOMContentLoaded', () => {
   // Save original content to compare to later
-  initialContent = document.querySelector('#id_content').value
+  initialContent = document.querySelector('#id_content').value;
   // If the server returned an error, assume content is changed as the initial value can no longer be retrieved
-  submitFailed = document.querySelector('.errorlist.nonfield')
-})
+  submitFailed = document.querySelector('.errorlist.nonfield');
+});
 
 window.addEventListener('beforeunload', function (event) {
   // Warn user before leaving page if any changes were made to the content (edit or new page)

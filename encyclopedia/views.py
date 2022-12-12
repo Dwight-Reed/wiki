@@ -9,7 +9,8 @@ from markdown import markdown
 from random import choice
 
 from . import util, wiki_syntax, diff_generator
-from .forms import EntryContentUpdateForm, EntryCreateForm, EntryTalkUpdateForm, ImageCreateForm, RegisterForm
+from .forms import EntryContentUpdateForm, EntryCreateForm, \
+    EntryTalkUpdateForm, ImageCreateForm, RegisterForm
 from .models import Entry, Image, User
 
 
@@ -58,7 +59,8 @@ class EntryUpdateView(LoginRequiredMixin, UpdateView):
     form_class = EntryContentUpdateForm
     template_name_suffix = "_update_form"
 
-    # Set form based on title format (EntryTalkUpdateForm if title starts with "wiki:")
+    # Set form based on title format
+    # (EntryTalkUpdateForm if title starts with "wiki:")
     def get_form_class(self):
         is_talk = util.strip_title(self.kwargs.get("title"))[1]
         if is_talk:
@@ -94,9 +96,11 @@ def wiki(request, title):
     try:
         entry = Entry.objects.get(title__iexact=stripped_title)
     except ObjectDoesNotExist:
-        return HttpResponseNotFound(render(request, "encyclopedia/entry_not_found.html", {
-            "title": stripped_title,
-        }))
+        return HttpResponseNotFound(render(
+            request, "encyclopedia/entry_not_found.html", {
+                "title": stripped_title,
+            }
+        ))
 
     if is_talk:
         content = entry.talk
@@ -105,7 +109,8 @@ def wiki(request, title):
         content = entry.content
         template = "encyclopedia/entry.html"
 
-    # markdown raises an exception when the input is empty (talk pages can be empty)
+    # markdown raises an exception when the input is empty
+    # (talk pages can be empty)
     if not content:
         content = "## This talk page has no content"
 
@@ -130,10 +135,12 @@ def wiki(request, title):
         "content": processed_content,
     })
 
+
 def history(request, title):
     stripped_title, is_talk = util.strip_title(title)
     hist = []
-    # To determine if a change was made to the talk or the content page, check which field changed since the last record
+    # To determine if a change was made to the talk or the content page,
+    # check which field changed since the last record
     for record in Entry.objects.get(title=stripped_title).history.all():
         try:
             if is_talk:
@@ -185,12 +192,14 @@ def image(request, name):
     try:
         image = Image.objects.get(name=name)
     except ObjectDoesNotExist:
-        return HttpResponseNotFound(render(request, "encyclopedia/image_not_found.html", {
-            "name": name,
-        }))
+        return HttpResponseNotFound(render(
+            request, "encyclopedia/image_not_found.html", {
+                "name": name,
+            }
+        ))
 
     return render(request, "encyclopedia/image.html", {
-        "image": image
+        "image": image,
     })
 
 
@@ -200,14 +209,15 @@ def search_results(request):
     return render(request, "encyclopedia/search.html", {
         "query": query,
         "results": results,
-        "result_count": len(results)
+        "result_count": len(results),
     })
 
 
 def search(request):
     query = request.GET.get("q")
 
-    results = list(Entry.objects.filter(title__icontains=query).values_list("title", flat=True))
+    results = list(Entry.objects.filter(
+        title__icontains=query).values_list("title", flat=True))
     return JsonResponse({"results": results})
 
 

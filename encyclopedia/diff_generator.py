@@ -2,7 +2,7 @@ import difflib
 
 
 class CustomHtmlDiff(difflib.HtmlDiff):
-    def make_table(self,fromlines,tolines,fromdesc='',todesc='',context=False,
+    def make_table(self, fromlines, tolines, fromdesc='', todesc='', context=False,
                    numlines=5):
         """Returns HTML table of side by side comparison with change highlights
 
@@ -26,26 +26,25 @@ class CustomHtmlDiff(difflib.HtmlDiff):
 
         # change tabs to spaces before it gets more difficult after we insert
         # markup
-        fromlines,tolines = self._tab_newline_replace(fromlines,tolines)
+        fromlines, tolines = self._tab_newline_replace(fromlines, tolines)
 
         # create diffs iterator which generates side by side from/to data
         if context:
             context_lines = numlines
         else:
             context_lines = None
-        diffs = difflib._mdiff(fromlines,tolines,context_lines,linejunk=self._linejunk,
-                      charjunk=self._charjunk)
-
+        diffs = difflib._mdiff(fromlines, tolines, context_lines, linejunk=self._linejunk,
+                               charjunk=self._charjunk)
 
         # set up iterator to wrap lines that exceed desired width
         if self._wrapcolumn:
             diffs = self._line_wrapper(diffs)
 
         # collect up from/to lines and flags into lists (also format the lines)
-        fromlist,tolist,flaglist = self._collect_lines(diffs)
+        fromlist, tolist, flaglist = self._collect_lines(diffs)
         # process change flags, generating middle column of next anchors/links
-        fromlist,tolist,flaglist,next_href,next_id = self._convert_flags(
-            fromlist,tolist,flaglist,context,numlines)
+        fromlist, tolist, flaglist, next_href, next_id = self._convert_flags(
+            fromlist, tolist, flaglist, context, numlines)
         s = []
         fmt = '<tr>%s%s</tr>\n'
         for i in range(len(flaglist)):
@@ -55,7 +54,7 @@ class CustomHtmlDiff(difflib.HtmlDiff):
                 if i > 0:
                     s.append('        </tbody>        \n        <tbody>\n')
             else:
-                s.append( fmt % (fromlist[i], tolist[i]))
+                s.append(fmt % (fromlist[i], tolist[i]))
 
         if fromdesc or todesc:
             header_row = '<thead><tr>%s%s</tr></thead>' % (
@@ -69,13 +68,13 @@ class CustomHtmlDiff(difflib.HtmlDiff):
             header_row=header_row,
             prefix=self._prefix[1])
 
-        return table.replace('\0+','<span class="diff_add">'). \
-                     replace('\0-','<span class="diff_sub">'). \
-                     replace('\0^','<span class="diff_chg">'). \
-                     replace('\1','</span>'). \
-                     replace('\t','&nbsp;')
+        return table.replace('\0+', '<span class="diff_add">'). \
+            replace('\0-', '<span class="diff_sub">'). \
+            replace('\0^', '<span class="diff_chg">'). \
+            replace('\1', '</span>'). \
+            replace('\t', '&nbsp;')
 
-    def _format_line(self,side,flag,linenum,text):
+    def _format_line(self, side, flag, linenum, text):
         """Returns HTML markup of "from" / "to" text lines
 
         side -- 0 or 1 indicating "from" or "to" text
@@ -89,10 +88,11 @@ class CustomHtmlDiff(difflib.HtmlDiff):
             pass
 
         # replace those things that would get confused with HTML symbols
-        text=text.replace("&","&amp;").replace(">","&gt;").replace("<","&lt;")
+        text = text.replace("&", "&amp;").replace(
+            ">", "&gt;").replace("<", "&lt;")
 
         # make space non-breakable so they don't get compressed or line wrapped
         text = text.rstrip()
 
         return '<td class="diff-line-number">%s</td><td class="diff-text">%s</td>' \
-               % (linenum,text)
+               % (linenum, text)

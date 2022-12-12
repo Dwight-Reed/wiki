@@ -1,5 +1,5 @@
 from django.contrib.auth import views as auth_views
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 from .forms import LoginForm
@@ -19,7 +19,8 @@ urlpatterns = [
     path("wiki/<str:title>/edit/", views.EntryUpdateView.as_view(), name="edit"),
 
     # Auth
-    path("login/", auth_views.LoginView.as_view(authentication_form=LoginForm, redirect_field_name=views.index), name="login"),
+    path("login/", auth_views.LoginView.as_view(authentication_form=LoginForm,
+         redirect_field_name=views.index), name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register, name="register"),
 
