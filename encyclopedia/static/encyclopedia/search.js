@@ -17,7 +17,6 @@ function search() {
         data['results'].slice(0, 5).forEach((entryTitle) => {
           let li = document.createElement('li');
           let link = document.createElement('a');
-          // TODO: check if entryTitle can be capitalized and if links with diff capitalization work
           link.setAttribute('href', `/wiki/${entryTitle}`);
           link.classList.add('dropdown-item');
           // Used to help modify bolded parts
@@ -50,7 +49,6 @@ function escapeRegExp(string) {
 // Adds bold tags wrapping all appearances of fragment in text (case-insensitive)
 function boldFragment(text, fragment) {
   reg = new RegExp(escapeRegExp(fragment), 'gi');
-  // TODO: change in-line function
   final_str = text.replace(reg, function (str) { return '<b>' + str + '</b>'; });
   return final_str;
 }
